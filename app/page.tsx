@@ -220,11 +220,11 @@ const Home = () => {
       <div className="flex w-[98%] mx-auto item-center h-[85vh] md:h-full overflow-auto">
         <aside
           onClick={prev}
-          className="w-[5%] hidden md:flex items-center hover:cursor-pointer text-shade-dark justify-center"
+          className="w-[3%] hidden md:flex items-center hover:cursor-pointer text-shade-dark justify-center"
         >
           <IoIosArrowBack className="h-8 w-8" />
         </aside>
-        <div className="w-full md:w-[90%] mx-auto hidden md:block">
+        <div className="w-full md:w-[95%] mx-auto hidden md:block">
           <Slider ref={sliderRef} {...settings}>
             {values.map((each, i) => (
               <div
@@ -241,9 +241,12 @@ const Home = () => {
                 </p>
                 <section className="h-[70vh]">
                   <ResponsiveContainer
-                    className={"-ml-5 md:ml-0 text-xs md:text-base w-full"}
+                    className={"text-xs md:text-base w-full"}
                   >
-                    <LineChart data={each}>
+                    <LineChart
+                      data={each}
+                      margin={{ top: 15, right: 30, left: 20, bottom: 30 }}
+                    >
                       <CartesianGrid strokeDasharray="2" opacity={0.5} />
                       <XAxis
                         dataKey="date"
@@ -251,7 +254,12 @@ const Home = () => {
                         tickLine={false}
                         tickFormatter={(str) => {
                           const date = parseISO(str);
-                          return format(date, "MMM, d");
+                          return format(date, "HH:mm");
+                        }}
+                        label={{
+                          value: `Date`,
+                          angle: 0,
+                          position: "bottom",
                         }}
                       />
                       <YAxis
@@ -260,6 +268,22 @@ const Home = () => {
                         tickLine={false}
                         tickCount={20}
                         tickFormatter={(number) => `${number.toFixed(2)}`}
+                        label={{
+                          value: `${
+                            data.channel[
+                              `field${i + 1}` as keyof typeof data.channel
+                            ]
+                              .toString()[0]
+                              .toUpperCase() +
+                            data.channel[
+                              `field${i + 1}` as keyof typeof data.channel
+                            ]
+                              .toString()
+                              .slice(1)
+                          }`,
+                          angle: -90,
+                          position: "left",
+                        }}
                       />
                       <Tooltip
                         content={({ active, label, payload }) => (
@@ -270,7 +294,7 @@ const Home = () => {
                           />
                         )}
                       />
-                      <Legend />
+
                       <Line
                         type="linear"
                         dataKey="value"
@@ -286,7 +310,7 @@ const Home = () => {
         </div>
         <aside
           onClick={next}
-          className="w-[5%] hidden md:flex items-center hover:cursor-pointer text-shade-dark justify-center"
+          className="w-[3%] hidden md:flex items-center hover:cursor-pointer text-shade-dark justify-center"
         >
           <IoIosArrowForward className="h-8 w-8" />
         </aside>
@@ -457,24 +481,23 @@ export default Home;
 
 const CustomToolTip = ({
   active,
-  payload,
-  label,
+  payload = [],
+  label = "",
 }: {
   active: boolean;
   payload: any[];
   label: string;
 }) => {
-  console.log("label-time", label);
   if (!active) return null;
 
   return (
     <div className="text-sm border rounded-lg bg-white flex flex-col space-y-1 p-4">
-      {parseISO(label) ? (
-        <p className="text-primary-6">
-          {format(parseISO(label), "eeee, d MMM, yyyy") ?? ""}
-        </p>
+      <p className="text-primary-6">
+        {format(new Date(label), "KK:mm:ss aaa") ?? ""}
+      </p>
+      {payload?.length !== 0 ? (
+        <p>{payload[0]?.value?.toFixed(2) ?? ""}</p>
       ) : null}
-      {payload[0] ? <p>{payload[0]?.value?.toFixed(2) ?? ""}</p> : null}
     </div>
   );
 };
