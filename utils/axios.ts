@@ -8,7 +8,6 @@ const axiosInstance = axios.create({
   baseURL,
   timeout: 10000,
   headers,
-  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
